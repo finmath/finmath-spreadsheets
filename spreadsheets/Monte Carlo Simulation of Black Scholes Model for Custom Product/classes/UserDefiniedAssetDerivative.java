@@ -1,8 +1,8 @@
 
 import net.finmath.exception.CalculationException;
 import net.finmath.montecarlo.assetderivativevaluation.products.AbstractAssetMonteCarloProduct;
-import net.finmath.montecarlo.assetderivativevaluation.AssetModelMonteCarloSimulationInterface;
-import net.finmath.stochastic.RandomVariableInterface;
+import net.finmath.montecarlo.assetderivativevaluation.AssetModelMonteCarloSimulationModel;
+import net.finmath.stochastic.RandomVariable;
 
 /**
  * Implements pricing of a European stock option.
@@ -35,19 +35,19 @@ public class UserDefiniedAssetDerivative extends AbstractAssetMonteCarloProduct 
 	 * @return The random variable representing the value of the product discounted to evaluation time
 	 */
 	@Override
-	public RandomVariableInterface getValue(double evaluationTime, AssetModelMonteCarloSimulationInterface model) throws CalculationException {
+	public RandomVariable getValue(double evaluationTime, AssetModelMonteCarloSimulationModel model) throws CalculationException {
 		// Get underlying and numeraire
-		RandomVariableInterface underlyingAtMaturity	= model.getAssetValue(maturity,0);
+		RandomVariable underlyingAtMaturity	= model.getAssetValue(maturity,0);
 		
 		// The payoff
-		RandomVariableInterface values = underlyingAtMaturity.sub(strike).floor(0.0);
+		RandomVariable values = underlyingAtMaturity.sub(strike).floor(0.0);
 		
 		// Discounting...
-		RandomVariableInterface	numeraireAtMaturity		= model.getNumeraire(maturity);
+		RandomVariable	numeraireAtMaturity		= model.getNumeraire(maturity);
 		values = values.div(numeraireAtMaturity);
 
 		// ...to evaluation time.
-		RandomVariableInterface	numeraireAtZero				= model.getNumeraire(evaluationTime);
+		RandomVariable	numeraireAtZero				= model.getNumeraire(evaluationTime);
 		values= values.mult(numeraireAtZero);
 
 		return values;
